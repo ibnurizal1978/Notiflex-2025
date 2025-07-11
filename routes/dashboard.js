@@ -15,6 +15,13 @@ const { spawn } = require('child_process');
 
 // Set PATH environment variable to include poppler binaries
 const currentPath = process.env.PATH || '';
+const popplerPaths = new PDFPoppler(filePath, {
+  popplerPath: popplerPath // Ini yang harus diset!
+  // Anda juga bisa spesifik per utility:
+  // pdftoppm: path.join(popplerPath, 'pdftoppm'),
+  // pdftotext: path.join(popplerPath, 'pdftotext'),
+  // ...
+});
 /*const popplerPaths = [
   'C:\\Users\\elzetor\\Downloads\\poppler-24.08.0\\Library\\bin',
   'C:\\Program Files\\poppler-23.11.0\\Library\\bin',
