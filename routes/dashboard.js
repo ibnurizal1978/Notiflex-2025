@@ -15,13 +15,13 @@ const { spawn } = require('child_process');
 
 // Set PATH environment variable to include poppler binaries
 const currentPath = process.env.PATH || '';
-const popplerPaths = [
+/*const popplerPaths = [
   'C:\\Users\\elzetor\\Downloads\\poppler-24.08.0\\Library\\bin',
   'C:\\Program Files\\poppler-23.11.0\\Library\\bin',
   'C:\\Program Files\\poppler-24.02.0\\Library\\bin',
   'C:\\poppler\\bin',
   path.join(process.cwd(), 'poppler', 'bin')
-];
+];*/
 
 // Add poppler paths to PATH if they exist
 const newPaths = popplerPaths.filter(p => fs.existsSync(p));
