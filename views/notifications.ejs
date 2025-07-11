@@ -1,0 +1,264 @@
+<%- include('layouts/header') %>
+
+<main role="main" class="main-content">
+  <div class="container-fluid">
+      <div class="row justify-content-center">
+          <div class="col-12">
+              <div class="row align-items-center my-4">
+                  <div class="col">
+                      <h2 class="h3 mb-0 page-title">Reminder Notifications</h2>
+                  </div>
+                  <div class="col-auto d-flex align-items-center">
+                      <!--<form class="form-inline mr-2 searchform text-muted" method="get" action="">
+                          <input class="form-control" type="text" name="search" placeholder="Type something..." aria-label="Search" value="<%= typeof search !== 'undefined' ? search : '' %>">
+                          <button class="btn btn-outline-secondary ml-2" type="submit">Search</button>
+                      </form>-->
+                      <a href="/dashboard/notifications/create" class="btn btn-primary ml-2"><span class="fe fe-filter fe-12 mr-2"></span>Create</a>
+                  </div>
+              </div>
+              <div class="row">
+                  <!-- Kolom Informasi Grup (col-md-4) -->
+                  <div class="col-md-4 mb-4"> <!-- Tambahkan mb-4 untuk margin bawah di mobile -->
+                      <div class="card shadow">
+                          <div class="card-body my-n3">
+                              <div class="row align-items-center">
+                                  <div class="col">
+                                      <h3 class="h5 mt-4 mb-1">What is a Notifications?</h3>
+                                      <p class="text-muted">
+                                          <br/>This feature allows you to tailor notification schedules with flexibility. For each defined "object" category, such as a "Person," "Vehicle," or "Building," you can set multiple, distinct reminder intervals (e.g., 30 days, 20 days, or 15 days before a due date).<br/><br/>These alerts are then directed to specific user groups you have created in the <a href="/dashboard/groups">Groups</a> section, ensuring that only the most relevant individuals receive timely notifications for deadlines associated with each unique object.
+                                      </p>
+                                      <br/><br/>
+                                  </div> <!-- .col -->
+                              </div> <!-- .row -->
+                          </div> <!-- .card-body -->
+                      </div> <!-- .card -->
+                  </div> <!-- .col-md-4 -->
+
+                  <div class="col-md-8 col-xl-8">
+                    <div class="card shadow mb-4">
+                      <div class="card-header">
+                        <h3 class="h5 mt-2 ml-3 mb-1">Reminder Notification List</h3>
+                      </div>
+                      <div class="card-body">
+                        <div class="list-group list-group-flush my-n3">
+                          <% if (notificationsPage && notificationsPage.length > 0) { %>
+                            <% 
+                              // Group by objectTypeName
+                              const grouped = {};
+                              notificationsPage.forEach(function(item) {
+                                if (!grouped[item.objectTypeName]) grouped[item.objectTypeName] = [];
+                                grouped[item.objectTypeName].push(item);
+                              });
+                              Object.keys(grouped).forEach(function(objectTypeName) {
+                            %>
+                            <div class="mb-4">
+                              <div class="col"><strong><%= objectTypeName %></strong></div>
+                              <% grouped[objectTypeName].forEach(function(item) { %>
+                                <div class="row align-items-center mb-2 ml-2">
+                                  <div class="col">
+                                    <span class="text-muted">- <%= item.remind_in %> day(s) before via <%= item.remind_using %> to <%= (item.userNames && item.userNames.length) ? item.userNames.join(', ') : '-' %> 
+                                      <a class="badge badge-danger pointer delete-notif-btn" data-id="<%= item.id %>" href="#">delete</a>
+                                    </span>
+                                  </div>
+                                </div>
+                              <% }); %>
+                            </div>
+                            <% }); %>
+                          <% } else { %>
+                            <div class="text-center text-muted">No notifications found.</div>
+                          <% } %>
+
+                        </div> <!-- / .list-group -->
+                      </div> <!-- / .card-body -->
+                    </div> <!-- .card -->
+
+                    <!-- Paging -->
+                    <% const safeTotalPages = (typeof totalPages !== 'undefined' && totalPages) ? totalPages : 1; %>
+                    <% if (safeTotalPages > 1) { %>
+                    <nav aria-label="Table Paging" class="my-3">
+                        <ul class="pagination justify-content-end mb-0">
+                            <% for (let i = 1; i <= safeTotalPages; i++) { %>
+                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %><% if (typeof search !== 'undefined' && search) { %>&search=<%= search %><% } %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                    <% } %>
+                  </div>
+                </div> <!-- end section -->
+              </div>
+          </div> <!-- .col-12 -->
+      </div> <!-- .row justify-content-center -->
+  </div> <!-- .container-fluid -->
+</main> <!-- main -->
+
+<script>
+  // Tampilkan modal edit dan load konten via AJAX
+  document.querySelectorAll('.btn-edit-group').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var groupId = btn.getAttribute('data-id');
+      $('#modalEditGroup').modal('show');
+      $('#modalEditGroupContent').html('<div class="p-4 text-center text-muted">Loading...</div>');
+      fetch('/dashboard/groups/edit/' + groupId)
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('modalEditGroupContent').innerHTML = html;
+        });
+    });
+  });
+</script>
+
+<!-- Modal Edit Notification -->
+<div class="modal fade" id="modalEditNotification" tabindex="-1" role="dialog" aria-labelledby="modalEditNotificationLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="editNotificationForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditNotificationLabel">Edit Notification</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Object</label>
+            <input type="text" id="edit_object_name" class="form-control" disabled>
+          </div>
+          <div class="form-group">
+            <label>Remind In (days)</label>
+            <input type="text" id="edit_remind_in" name="remind_in" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Remind Using</label>
+            <select id="edit_remind_using" name="remind_using" class="form-control">
+              <option value="EMAIL">EMAIL</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Group</label>
+            <select id="edit_group_id" name="group_id" class="form-control" required>
+              <!-- Options diisi via JS -->
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  // Simpan data notifikasi di JS agar bisa diakses saat edit
+  const notificationsData = JSON.parse('<%- JSON.stringify(notificationsPage) %>');
+  // Simpan semua group yang mungkin (dari backend, harus dikirim ke EJS)
+  const allGroups = JSON.parse('<%- JSON.stringify(allGroups || []) %>');
+
+  // Event: klik Edit
+  document.querySelectorAll('.btn-edit-notification').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const notifIdx = btn.getAttribute('data-idx');
+      const notif = notificationsData[notifIdx];
+      if (!notif) return;
+      // Isi modal
+      document.getElementById('edit_object_name').value = notif.objectTypeName;
+      document.getElementById('edit_remind_in').value = notif.remind_in;
+      document.getElementById('edit_remind_using').value = notif.remind_using;
+      // Dropdown group
+      const groupSelect = document.getElementById('edit_group_id');
+      groupSelect.innerHTML = '';
+      allGroups.forEach(function(g) {
+        const selected = (g.name === notif.groupName) ? 'selected' : '';
+        groupSelect.innerHTML += `<option value="${g.id}" ${selected}>${g.name}</option>`;
+      });
+      // Simpan idx dan id di form
+      document.getElementById('editNotificationForm').setAttribute('data-idx', notifIdx);
+      document.getElementById('editNotificationForm').setAttribute('data-id', notif.id);
+      $('#modalEditNotification').modal('show');
+    });
+  });
+
+  // Submit update
+  const updateBtn = document.querySelector('#editNotificationForm button[type="submit"]');
+  document.getElementById('editNotificationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const notifId = this.getAttribute('data-id');
+    const groupId = document.getElementById('edit_group_id').value;
+    const remindIn = document.getElementById('edit_remind_in').value;
+    const remindUsing = document.getElementById('edit_remind_using').value;
+    if (!groupId || !remindIn) {
+      alert('Please fill all required fields.');
+      return;
+    }
+    // UX: Disable button, show updating
+    updateBtn.disabled = true;
+    const oldText = updateBtn.innerText;
+    updateBtn.innerText = 'Updating...';
+    try {
+      const res = await fetch(`/dashboard/notifications/edit/${notifId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ group_id: groupId, remind_in: remindIn, remind_using: remindUsing })
+      });
+      const result = await res.json();
+      if (result.success) {
+        alert('Notification updated!');
+        window.location.reload();
+      } else {
+        alert(result.error || 'Failed to update notification.');
+      }
+    } catch (err) {
+      alert('Failed to update notification.');
+    }
+    updateBtn.disabled = false;
+    updateBtn.innerText = oldText;
+  });
+
+  // Event delegation untuk delete notification
+  const notifListGroup = document.querySelector('.list-group');
+  if (notifListGroup) {
+    notifListGroup.addEventListener('click', async function(e) {
+      const btn = e.target.closest('.delete-notif-btn');
+      if (btn) {
+        e.preventDefault();
+        if (!confirm('Are you sure you want to delete this notification?')) return;
+        const id = btn.getAttribute('data-id');
+        btn.innerText = 'deleting data...';
+        btn.classList.add('disabled');
+        try {
+          const res = await fetch(`/dashboard/notifications/delete/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const result = await res.json();
+          if (result.success) {
+            window.location.reload();
+          } else {
+            alert(result.error || 'Failed to delete notification.');
+            btn.innerText = 'delete';
+            btn.classList.remove('disabled');
+          }
+        } catch (err) {
+          alert('Failed to delete notification.');
+          btn.innerText = 'delete';
+          btn.classList.remove('disabled');
+        }
+      }
+    });
+  }
+</script>
+
+<%- include('layouts/footer') %>
+
+<!-- Modal Edit Group (kosong, akan diisi via AJAX) -->
+<div class="modal fade" id="modalEditGroup" tabindex="-1" role="dialog" aria-labelledby="modalEditGroupLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" id="modalEditGroupContent">
+      <!-- Konten akan di-load via AJAX -->
+    </div>
+  </div>
+</div>

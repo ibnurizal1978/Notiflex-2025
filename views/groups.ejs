@@ -1,0 +1,104 @@
+<%- include('layouts/header') %>
+
+<main role="main" class="main-content">
+  <div class="container-fluid">
+      <div class="row justify-content-center">
+          <div class="col-12">
+              <div class="row align-items-center my-4">
+                  <div class="col">
+                      <h2 class="h3 mb-0 page-title">Groups</h2>
+                  </div>
+                  <div class="col-auto d-flex align-items-center">
+                      <form class="form-inline mr-2 searchform text-muted" method="get" action="">
+                          <input class="form-control" type="text" name="search" placeholder="Type something..." aria-label="Search" value="<%= typeof search !== 'undefined' ? search : '' %>">
+                          <button class="btn btn-outline-secondary ml-2" type="submit">Search</button>
+                      </form>
+                      <a href="/dashboard/groups/create" class="btn btn-primary ml-2"><span class="fe fe-filter fe-12 mr-2"></span>Create</a>
+                  </div>
+              </div>
+              <div class="row">
+                  <!-- Kolom Informasi Grup (col-md-4) -->
+                  <div class="col-md-4 mb-4"> <!-- Tambahkan mb-4 untuk margin bawah di mobile -->
+                      <div class="card shadow">
+                          <div class="card-body my-n3">
+                              <div class="row align-items-center">
+                                  <div class="col">
+                                      <h3 class="h5 mt-4 mb-1">What is a Groups?</h3>
+                                      <p class="text-muted">
+                                          <br/>Groups are a core feature for managing document notifications with precision and collaboration. Users can define custom reminder schedules, such as 30 days, 15 days, or any other interval before a document's due date.
+                                          <br/><br/>Once set, these crucial notifications are then efficiently dispatched to all members within a designated group, ensuring that every relevant individual receives timely alerts for the documents that matter to them.
+                                      </p>
+                                      <br/>
+                                      <p class="text-danger">Please note:</p>
+                                      <span class="text-muted">Deleted users won't show on the group list anymore.</span>
+                                      <br/><br/>
+                                  </div> <!-- .col -->
+                              </div> <!-- .row -->
+                          </div> <!-- .card-body -->
+                      </div> <!-- .card -->
+                  </div> <!-- .col-md-4 -->
+
+                  <div class="col-md-8 col-xl-8">
+                    <div class="card shadow mb-4">
+                      <div class="card-header">
+                        <h3 class="h5 mt-2 ml-3 mb-1">Group List</h3>
+                      </div>
+                      <div class="card-body">
+                        <div class="list-group list-group-flush my-n3">
+                          <% if (groupsPage && groupsPage.length > 0) { %>
+                            <% groupsPage.forEach(function(group) { %>
+                          <div class="list-group-item">
+                            <div class="row align-items-center">
+                              <div class="col">
+                                <strong><%= group.name %></strong>
+                                <div class="my-0 text-muted small">
+                                  <% if (group.memberNames && group.memberNames.length > 0) { %>
+                                    <small class="text-muted"><b>Members:</b> <%= group.memberNames.join(', ') %></small>
+                                  <% } %>
+                                </div>
+                              </div>
+                              <div class="col-auto">
+                                <button class="float-right small text-muted btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <span class="text-muted sr-only"><i class="fe fe-more-vertical fe-12"></i></span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="/dashboard/groups/edit/<%= group.id %>">Edit</a>
+                                    <form method="POST" action="/dashboard/groups/delete/<%= group.id %>" style="display:inline;">
+                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this group?');">Delete</button>
+                                    </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <% }); %>
+                          <% } else { %>
+                              <tr><td colspan="2" class="text-center text-muted">No groups found.</td></tr>
+                          <% } %>
+
+                        </div> <!-- / .list-group -->
+                      </div> <!-- / .card-body -->
+                    </div> <!-- .card -->
+                    
+                      <!-- Paging -->
+                      <% const safeTotalPages = (typeof totalPages !== 'undefined' && totalPages) ? totalPages : 1; %>
+                      <% if (safeTotalPages > 1) { %>
+                      <nav aria-label="Table Paging" class="my-3">
+                          <ul class="pagination justify-content-end mb-0">
+                              <% for (let i = 1; i <= safeTotalPages; i++) { %>
+                                  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                      <a class="page-link" href="?page=<%= i %><% if (typeof search !== 'undefined' && search) { %>&search=<%= search %><% } %>"><%= i %></a>
+                                  </li>
+                              <% } %>
+                          </ul>
+                      </nav>
+                      <% } %>
+
+                  </div>
+                </div> <!-- end section -->
+              </div>
+          </div> <!-- .col-12 -->
+      </div> <!-- .row justify-content-center -->
+  </div> <!-- .container-fluid -->
+</main> <!-- main -->
+
+  <%- include('layouts/footer') %>

@@ -1,0 +1,187 @@
+<%- include('layouts/header') %>
+
+<main role="main" class="main-content">
+  <div class="container-fluid">
+      <div class="row justify-content-center">
+          <div class="col-12">
+              <div class="row align-items-center my-4">
+                  <div class="col">
+                      <h2 class="h3 mb-0 page-title">Objects</h2>
+                  </div>
+                  <div class="col-auto d-flex align-items-center">
+                      <form class="form-inline mr-2 searchform text-muted" method="get" action="">
+                          <input class="form-control" type="text" name="search" placeholder="Type something..." aria-label="Search" value="<%= typeof search !== 'undefined' ? search : '' %>">
+                          <button class="btn btn-outline-secondary ml-2" type="submit">Search</button>
+                      </form>
+                      <a href="/dashboard/objects/create" class="btn btn-primary ml-2"><span class="fe fe-filter fe-12 mr-2"></span>Create</a>
+                  </div>
+              </div>
+              <div class="row">
+                  <!-- Kolom Informasi Grup (col-md-4) -->
+                  <div class="col-md-4 mb-4"> <!-- Tambahkan mb-4 untuk margin bawah di mobile -->
+                      <div class="card shadow">
+                          <div class="card-body my-n3">
+                              <div class="row align-items-center">
+                                  <div class="col">
+                                      <h3 class="h5 mt-4 mb-1">What is an Object?</h3>
+                                      <p class="text-muted">
+                                          <br/>Groups are a core feature for managing document notifications with precision and collaboration. Users can define custom reminder schedules, such as 30 days, 15 days, or any other interval before a document's due date.
+                                          <br/><br/>Once set, these crucial notifications are then efficiently dispatched to all members within a designated group, ensuring that every relevant individual receives timely alerts for the documents that matter to them.
+                                      </p>
+                                      <br/>
+                                      <p class="text-danger">Please note:</p>
+                                      <span class="text-muted">Deleted object won't show on the object list anymore.</span>
+                                      <br/><br/>
+                                  </div> <!-- .col -->
+                              </div> <!-- .row -->
+                          </div> <!-- .card-body -->
+                      </div> <!-- .card -->
+                  </div> <!-- .col-md-4 -->
+
+                  <div class="col-md-8 col-xl-8">
+                    <div class="card shadow mb-4">
+                      <div class="card-header">
+                        <h3 class="h5 mt-2 ml-3 mb-1">Object List</h3>
+                        <div id="objectNotifArea"></div>
+                      </div>
+                      <div class="card-body">
+                        <div class="list-group list-group-flush my-n3">
+                          <% if (objects && objects.length > 0) { %>
+                            <% objects.forEach(function(object) { %>
+                          <div class="list-group-item">
+                            <div class="row align-items-center">
+                              <div class="col">
+                                <strong><%= object.name %></strong>
+                                <div class="my-0 text-muted small">
+                                  <% if (object.location) { %>
+                                    <small class="text-muted"><b>Location:</b> <%= object.location %></small><br/>
+                                  <% } %>
+                                  <% if (object.notes) { %>
+                                    <small class="text-muted"><b>Notes:</b> <%= object.notes %></small>
+                                  <% } %>
+                                </div>
+                              </div>
+                              <div class="col-auto">
+                                <strong><%= object.object_type.name %></strong>
+                                <br/>
+                                <button class="float-right small text-muted btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <span class="text-muted sr-only"><i class="fe fe-more-vertical fe-12"></i></span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="/dashboard/objects/edit/<%= encryptId(object.id) %>">Edit</a>
+                                    <a class="dropdown-item" href="/dashboard/items/add/<%= encryptId(object.id) %>">Add item</a>
+                                    <a class="dropdown-item" href="/dashboard/groups/edit/">View items</a>
+                                    <form method="POST" action="/dashboard/objects/delete/<%= encryptId(object.id) %>" style="display:inline;" onsubmit="return deleteObject(event, '<%= encryptId(object.id) %>');">
+                                        <button type="submit" class="dropdown-item text-danger">Delete</button>
+                                    </form>
+                                </div>
+                              </div>                              
+                            </div>
+                          </div>
+                          <% }); %>
+                          <% } else { %>
+                              <div class="text-center text-muted">No objects found.</div>
+                          <% } %>
+
+                        </div> <!-- / .list-group -->
+                      </div> <!-- / .card-body -->
+                    </div> <!-- .card -->
+                    
+                      <!-- Paging -->
+                      <% const safeTotalPages = (typeof totalPages !== 'undefined' && totalPages) ? totalPages : 1; %>
+                      <% if (safeTotalPages > 1) { %>
+                      <nav aria-label="Table Paging" class="my-3">
+                          <ul class="pagination justify-content-end mb-0">
+                              <% for (let i = 1; i <= safeTotalPages; i++) { %>
+                                  <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                      <a class="page-link" href="?page=<%= i %><% if (typeof search !== 'undefined' && search) { %>&search=<%= search %><% } %>"><%= i %></a>
+                                  </li>
+                              <% } %>
+                          </ul>
+                      </nav>
+                      <% } %>
+
+                  </div>
+                </div> <!-- end section -->
+              </div>
+          </div> <!-- .col-12 -->
+      </div> <!-- .row justify-content-center -->
+  </div> <!-- .container-fluid -->
+</main> <!-- main -->
+
+  <%- include('layouts/footer') %>
+
+<script>
+document.getElementById('createObjectForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const data = {
+    name: formData.get('name'),
+    location: formData.get('location'),
+    notes: formData.get('notes'),
+    object_type_id: formData.get('object_type_id')
+  };
+  const saveBtn = this.querySelector('button[type="submit"]');
+  saveBtn.disabled = true;
+  saveBtn.innerText = 'Saving...';
+  document.getElementById('objectMsg').innerHTML = '';
+  try {
+    const res = await fetch('/dashboard/objects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (result.success) {
+      document.getElementById('objectMsg').innerHTML = '<div class="alert alert-success">Object created!</div>';
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      document.getElementById('objectMsg').innerHTML = '<div class="alert alert-danger">' + (result.error || 'Failed to create object.') + '</div>';
+    }
+  } catch (err) {
+    document.getElementById('objectMsg').innerHTML = '<div class="alert alert-danger">Failed to create object.</div>';
+  }
+  saveBtn.disabled = false;
+  saveBtn.innerText = 'Save';
+});
+
+// Function to handle object deletion
+async function deleteObject(event, encId) {
+  event.preventDefault();
+  if (!confirm('Are you sure you want to delete this object?')) {
+    return false;
+  }
+  
+  try {
+    const res = await fetch(`/dashboard/objects/delete/${encId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await res.json();
+    if (result.success) {
+      // Show success message
+      const notifArea = document.getElementById('objectNotifArea');
+      notifArea.innerHTML = '';
+      const successDiv = document.createElement('div');
+      successDiv.className = 'alert alert-success alert-dismissible fade show';
+      successDiv.innerHTML = `
+        Object deleted successfully!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      `;
+      notifArea.appendChild(successDiv);
+      
+      // Redirect after 1 second
+      setTimeout(() => {
+        window.location.href = '/dashboard/objects';
+      }, 1000);
+    } else {
+      alert('Failed to delete object: ' + (result.error || 'Unknown error'));
+    }
+  } catch (err) {
+    alert('Failed to delete object: ' + err.message);
+  }
+  return false;
+}
+</script>

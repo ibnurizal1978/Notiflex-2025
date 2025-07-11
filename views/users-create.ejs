@@ -1,0 +1,167 @@
+<%- include('layouts/header') %> 
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">     
+            <div class="col-12 col-xl-10">
+              <div class="card shadow mb-4">
+                <div class="card-body">
+                  <div class="row align-items-center my-4">
+                    <div class="col">
+                      <h2 class="h3 mb-0 page-title">Add User</h2>
+                    </div>
+                  </div>
+                  <form id="createUserForm">
+                    <hr class="my-4">
+                    <h5 class="mb-2 mt-4">Personal</h5>
+                    <div class="form-row">
+                      <div class="form-group col-md-4">
+                        <label for="fullname">Full Name</label>
+                        <input type="text" id="fullname" name="name" class="form-control" required>
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="leader_id">Leader</label>
+                        <select id="leader_id" name="leader_id" class="form-control">
+                          <option value="">Choose his leader (if any)</option>
+                          <% (leaders || []).forEach(function(leader) { %>
+                            <option value="<%= leader.id %>"><%= leader.name %> (<%= leader.email %>)</option>
+                          <% }); %>
+                        </select>
+                      </div>
+                    </div>
+                    <hr class="my-4">
+                      <div class="row mb-4">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="password1">Password</label>
+                            <input type="password" name="password1" class="form-control" id="password1" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="password2">Confirm Password</label>
+                            <input type="password" name="password2" class="form-control" id="password2" required>
+                          </div>
+                          <div id="passwordMatch" class="alert alert-danger" style="display: none;">
+                            Passwords do not match!
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <p class="mb-2">Password requirements</p>
+                          <p class="small text-muted mb-2"> To create a new password, you have to meet all of the following requirements: </p>
+                          <ul class="small text-muted pl-4 mb-0">
+                            <li> Minimum 6 character </li>
+                            <li>At least one special character</li>
+                            <li>At least one number</li>
+                            <li>Can't be the same as a previous password </li>
+                          </ul>
+                        </div>
+                      </div>
+                    <hr class="my-4">
+                    <h5 class="mb-2 mt-4">Access</h5>
+                    <p class="mb-4">Set access to a menu for this user. Menu is a list of navigation on your left screen.</p>
+                    <div class="form-row">
+                      <% (allMenus || []).forEach(function(menu) { %>
+                        <div class="form-group col-md-6">
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" 
+                                   class="custom-control-input" 
+                                   id="menu_<%= menu.id %>" 
+                                   name="menu_access" 
+                                   value="<%= menu.id %>"
+                                   <%= menu.url === '/dashboard' ? 'checked disabled' : '' %>>
+                            <label class="custom-control-label" for="menu_<%= menu.id %>">
+                              <%= menu.name %>
+                              <% if (menu.url === '/dashboard') { %>
+                                <small class="text-muted">(Required)</small>
+                              <% } %>
+                            </label>
+                          </div>
+                        </div>
+                      <% }); %>
+                    </div>
+                    <hr class="my-4">
+                    <div class="form-row">
+                      <div class="col-md-12 text-right">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                      </div>
+                    </div>
+                  </form>
+                </div> <!-- card body -->
+              </div><!-- card shadow -->
+            </div></div><!-- .col-12 -->
+          </div> <!-- .row -->
+        </div> <!-- .container-fluid -->
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <%- include('layouts/footer') %> 
+    
+    <script>
+      // Password validation
+      document.getElementById('password2').addEventListener('input', function() {
+        const password1 = document.getElementById('password1').value;
+        const password2 = this.value;
+        const matchDiv = document.getElementById('passwordMatch');
+        
+        if (password1 !== password2 && password2.length > 0) {
+          matchDiv.style.display = 'block';
+        } else {
+          matchDiv.style.display = 'none';
+        }
+      });
+      
+      // Form submission
+      document.getElementById('createUserForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = {
+          name: formData.get('name'),
+          email: formData.get('email'),
+          leader_id: formData.get('leader_id'),
+          password1: formData.get('password1'),
+          password2: formData.get('password2'),
+          menu_access: formData.getAll('menu_access')
+        };
+        
+        // Ensure dashboard menu is always included
+        const dashboardMenu = document.querySelector('input[value="1"]'); // Assuming dashboard has ID 1
+        if (dashboardMenu && !data.menu_access.includes('1')) {
+          data.menu_access.push('1');
+        }
+        
+        // UX: Disable save button, show saving
+        const saveBtn = this.querySelector('button[type="submit"]');
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Saving...';
+        
+        try {
+          const response = await fetch('/dashboard/users/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            alert('User created successfully!');
+            window.location.href = '/dashboard/users';
+          } else {
+            alert('Error: ' + result.error);
+            // Re-enable button
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred while creating the user.');
+          // Re-enable button
+          saveBtn.disabled = false;
+          saveBtn.innerText = 'Save';
+        }
+      });
+    </script>

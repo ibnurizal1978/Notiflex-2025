@@ -1,0 +1,95 @@
+<%- include('layouts/header') %> 
+<main role="main" class="main-content">
+  <div class="container-fluid">
+    <div class="row justify-content-center">     
+      <div class="col-12 col-xl-10">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <div class="row align-items-center my-4">
+              <div class="col">
+                <h2 class="h3 mb-0 page-title">Edit Object</h2>
+                <div id="objectMsg" class="mt-2"></div>
+              </div>
+            </div>
+            <form id="editObjectForm">
+              <hr class="my-4">
+              <h5 class="mb-2 mt-4">Object Information</h5>
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label for="objectName">Object Name</label>
+                  <input type="text" id="objectName" name="name" class="form-control" required value="<%= object.name %>">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="objectLocation">Location</label>
+                  <input type="text" id="objectLocation" name="location" class="form-control" value="<%= object.location %>">
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="objectNotes">Notes</label>
+                  <input type="text" id="objectNotes" name="notes" class="form-control" value="<%= object.notes %>">
+                </div>
+              </div>
+              <hr class="my-4">
+              <h5 class="mb-2 mt-4">Object Type</h5>
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label for="objectType">Object Type</label>
+                  <select id="objectType" name="object_type_id" class="form-control" required>
+                    <option value="">Select...</option>
+                    <% (objectTypes || []).forEach(function(type) { %>
+                      <option value="<%= type.id %>" <%= object.object_type_id === type.id ? 'selected' : '' %>><%= type.name %></option>
+                    <% }); %>
+                  </select>
+                </div>
+              </div>
+              <hr class="my-4">
+              <div class="form-row">
+                <div class="col-md-12 text-right">
+                  <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+              </div>
+            </form>
+          </div> <!-- card body -->
+        </div><!-- card shadow -->
+      </div></div><!-- .col-12 -->
+    </div> <!-- .row -->
+  </div> <!-- .container-fluid -->
+</main> <!-- main -->
+</div> <!-- .wrapper -->
+<%- include('layouts/footer') %> 
+
+<script>
+document.getElementById('editObjectForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const data = {
+    name: formData.get('name'),
+    location: formData.get('location'),
+    notes: formData.get('notes'),
+    object_type_id: formData.get('object_type_id')
+  };
+  const saveBtn = this.querySelector('button[type="submit"]');
+  saveBtn.disabled = true;
+  saveBtn.innerText = 'Saving...';
+  document.getElementById('objectMsg').innerHTML = '';
+  try {
+    const res = await fetch(`/dashboard/objects/edit/<%= encryptId(object.id) %>`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (result.success) {
+      document.getElementById('objectMsg').innerHTML = '<div class="alert alert-success">Object updated!</div>';
+      setTimeout(() => window.location.href = '/dashboard/objects', 1000);
+    } else {
+      document.getElementById('objectMsg').innerHTML = '<div class="alert alert-danger">' + (result.error || 'Failed to update object.') + '</div>';
+    }
+  } catch (err) {
+    document.getElementById('objectMsg').innerHTML = '<div class="alert alert-danger">Failed to update object.</div>';
+  }
+  saveBtn.disabled = false;
+  saveBtn.innerText = 'Update';
+});
+</script> 

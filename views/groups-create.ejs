@@ -1,0 +1,109 @@
+<%- include('layouts/header') %> 
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">     
+            <div class="col-12 col-xl-10">
+              <div class="card shadow mb-4">
+                <div class="card-body">
+                  <div class="row align-items-center my-4">
+                    <div class="col">
+                      <h2 class="h3 mb-0 page-title">Add Group</h2>
+                    </div>
+                  </div>
+                  <form id="createGroupForm">
+                    <hr class="my-4">
+                    <h5 class="mb-2 mt-4">Group Information</h5>
+                    <div class="form-row">
+                      <div class="form-group col-md-12">
+                        <label for="groupName">Group Name</label>
+                        <input type="text" id="groupName" name="name" class="form-control" required>
+                      </div>
+                    </div>
+                    <hr class="my-4">
+                    <h5 class="mb-2 mt-4">Members</h5>
+                    <p class="mb-4">Assign member to this group. Doesn't have users yet? <a href="/dashboard/users/create">Click here to create</a>.</p>
+                    <div class="form-row">
+                      <% (usersList || []).forEach(function(user) { %>
+                        <div class="form-group col-md-4">
+                          <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="member_<%= user.id %>" name="members" value="<%= user.id %>">
+                            <label class="custom-control-label" for="member_<%= user.id %>"><%= user.name %> (<%= user.email %>)</label>
+                          </div>
+                        </div>
+                      <% }); %>
+                    </div>
+                    <hr class="my-4">
+                    <h5 class="mb-2 mt-4">Reminder Period</h5>
+                    <% if (typeof reminderError !== 'undefined' && reminderError) { %>
+                      <div class="alert alert-warning"><%= reminderError %></div>
+                    <% } %>
+                    <p class="mb-4">Choose which objects will send reminder notifications to this group by checking their respective checkboxes.</p>
+                    <div class="form-row">
+                      <% (reminderList || []).forEach(function(reminder, idx) { %>
+                        <div class="form-group col-md-12 d-flex align-items-center">
+                          <div class="custom-control custom-checkbox mr-2">
+                            <input type="checkbox" class="custom-control-input" id="reminder_<%= reminder.id %>" name="reminders" value="<%= reminder.id %>">
+                            <label class="custom-control-label" for="reminder_<%= reminder.id %>"><%= reminder.object_name %>, remind in </label>
+                          </div>
+                          <input type="number" size="3" class="form-control ml-2" name="remind_in_<%= reminder.id %>" min="1" style="width:100px;" placeholder="Days">&nbsp;day(s)
+                        </div>
+                      <% }); %>
+                    </div>
+                    <hr class="my-4">
+                    <div class="form-row">
+                      <div class="col-md-12 text-right">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                      </div>
+                    </div>
+                  </form>
+                </div> <!-- card body -->
+              </div><!-- card shadow -->
+            </div></div><!-- .col-12 -->
+          </div> <!-- .row -->
+        </div> <!-- .container-fluid -->
+      </main> <!-- main -->
+    </div> <!-- .wrapper -->
+    <%- include('layouts/footer') %> 
+    
+    <script>
+      document.getElementById('createGroupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = {
+          name: formData.get('name'),
+          members: formData.getAll('members'),
+          reminders: formData.getAll('reminders'),
+          remind_in: []
+        };
+        (data.reminders || []).forEach(function(reminderId) {
+          data.remind_in.push(formData.get('remind_in_' + reminderId));
+        });
+        // UX: Disable save button, show saving
+        const saveBtn = this.querySelector('button[type="submit"]');
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Saving...';
+        try {
+          const response = await fetch('/dashboard/groups/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (result.success) {
+            alert('Group created successfully!');
+            window.location.href = '/dashboard/groups';
+          } else {
+            alert('Error: ' + result.error);
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred while creating the group.');
+          saveBtn.disabled = false;
+          saveBtn.innerText = 'Save';
+        }
+      });
+    </script>

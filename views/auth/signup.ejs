@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/assets/css/simplebar.css">
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/feather.css">
+  <link rel="stylesheet" href="/assets/css/daterangepicker.css">
+  <link rel="stylesheet" href="/assets/css/app-light.css" id="lightTheme">
+</head>
+<body class="light ">
+  <div class="container">
+    <div class="wrapper vh-100">
+      <div class="row align-items-center h-100">
+        <form class="col-lg-6 col-md-8 col-10 mx-auto" method="POST" action="/signup">
+          <div class="mx-auto text-center my-4">
+            <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="./index.html">
+              <svg version="1.1" id="logo" class="navbar-brand-img brand-md" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 120 120" xml:space="preserve">
+                <g>
+                  <polygon class="st0" points="78,105 15,105 24,87 87,87 	" />
+                  <polygon class="st0" points="96,69 33,69 42,51 105,51 	" />
+                  <polygon class="st0" points="78,33 15,33 24,15 87,15 	" />
+                </g>
+              </svg>
+            </a>
+            <h2 class="my-3">Register</h2>
+          </div>
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger" role="alert">
+              <%= error %>
+            </div>
+          <% } %>
+          <div class="form-group">
+            <label for="inputEmail4">Email</label>
+            <input type="email" name="email" class="form-control" id="inputEmail4" required>
+          </div>
+          <hr class="my-4">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="inputPassword5">New Password</label>
+                <input type="password" name="password" class="form-control" id="inputPassword5" required>
+              </div>
+              <div class="form-group">
+                <label for="inputPassword6">Confirm Password</label>
+                <input type="password" name="password2" class="form-control" id="inputPassword6" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2">Password requirements</p>
+              <p class="small text-muted mb-2"> To create a new password, you have to meet all of the following requirements: </p>
+              <ul class="small text-muted pl-4 mb-0">
+                <li> Minimum 6 character </li>
+                <li>At least one special character</li>
+                <li>At least one number</li>
+              </ul>
+            </div>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+            <div class="d-flex align-items-center my-3">
+              <hr class="flex-grow-1 me-2" />
+              <span>or sign up with</span>
+              <hr class="flex-grow-1 ms-2" />
+            </div>
+            <a href="/auth/google" class="btn btn-outline-danger w-100 mb-3">
+              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style="width:20px; margin-right:8px; vertical-align:middle;"> Google
+            </a>
+            <a href="/login" class="btn btn-link  d-block ">Back to Login</a>
+     
+          <p class="mt-5 mb-3 text-muted text-center">© 2020</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/popper.min.js"></script>
+  <script src="/assets/js/moment.min.js"></script>
+  <script src="/assets/js/bootstrap.min.js"></script>
+  <script src="/assets/js/simplebar.min.js"></script>
+  <script src="/assets/js/tinycolor-min.js"></script>
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/apps.js"></script>
+</body>
+</html> 
