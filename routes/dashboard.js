@@ -5,7 +5,6 @@ const { simpleMenuCheck } = require('../middleware/simpleAuth');
 const { encryptId, decryptId } = require('../middleware/idCrypto');
 const validator = require('validator');
 const multer = require('multer');
-//const upload = multer({ dest: 'uploads/' });
 const upload = multer({ storage: multer.memoryStorage() });
 const pdfParse = require('pdf-parse');
 const Tesseract = require('tesseract.js');
@@ -15,13 +14,6 @@ const { spawn } = require('child_process');
 
 // Set PATH environment variable to include poppler binaries
 const currentPath = process.env.PATH || '';
-const popplerPaths = new PDFPoppler(filePath, {
-  popplerPath: popplerPath // Ini yang harus diset!
-  // Anda juga bisa spesifik per utility:
-  // pdftoppm: path.join(popplerPath, 'pdftoppm'),
-  // pdftotext: path.join(popplerPath, 'pdftotext'),
-  // ...
-});
 /*const popplerPaths = [
   'C:\\Users\\elzetor\\Downloads\\poppler-24.08.0\\Library\\bin',
   'C:\\Program Files\\poppler-23.11.0\\Library\\bin',
@@ -31,22 +23,22 @@ const popplerPaths = new PDFPoppler(filePath, {
 ];*/
 
 // Add poppler paths to PATH if they exist
-const newPaths = popplerPaths.filter(p => fs.existsSync(p));
+/*const newPaths = popplerPaths.filter(p => fs.existsSync(p));
 if (newPaths.length > 0) {
   process.env.PATH = newPaths.join(';') + ';' + currentPath;
   console.log('Added poppler paths to PATH:', newPaths);
 } else {
   console.log('No poppler paths found. Available paths checked:', popplerPaths);
-}
+}*/
 
-let PdfConverter;
+/*let PdfConverter;
 try {
   PdfConverter = require('pdf-poppler').PdfConverter;
   console.log('pdf-poppler module loaded successfully');
 } catch (e) {
   console.log('pdf-poppler module not available:', e.message);
   PdfConverter = null;
-}
+}*/
 
 const { createClient } = require('@supabase/supabase-js');
 const fetch = require('node-fetch').default;
@@ -72,7 +64,7 @@ async function extractTextWithFallback(filePath, mimetype) {
     }
     
     // 2. Jika kosong/newline, fallback ke OCR (halaman 1)
-    if (!text || text.replace(/\n/g, '').length < 10) {
+    /*if (!text || text.replace(/\n/g, '').length < 10) {
       console.log('Text too short, attempting OCR fallback...');
       
       if (!PdfConverter) {
@@ -161,7 +153,7 @@ async function extractTextWithFallback(filePath, mimetype) {
           throw new Error('pdf-poppler conversion failed. Cannot OCR PDF.');
         }
       }
-    }
+    }*/
   } else if (mimetype.startsWith('image/')) {
     console.log('Processing image file with OCR...');
     const ocrResult = await Tesseract.recognize(filePath, 'ind');
