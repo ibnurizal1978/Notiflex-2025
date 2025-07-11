@@ -12,42 +12,6 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-// Set PATH environment variable to include poppler binaries
-const currentPath = process.env.PATH || '';
-/*const popplerPaths = [
-  'C:\\Users\\elzetor\\Downloads\\poppler-24.08.0\\Library\\bin',
-  'C:\\Program Files\\poppler-23.11.0\\Library\\bin',
-  'C:\\Program Files\\poppler-24.02.0\\Library\\bin',
-  'C:\\poppler\\bin',
-  path.join(process.cwd(), 'poppler', 'bin')
-];*/
-
-// Add poppler paths to PATH if they exist
-/*const newPaths = popplerPaths.filter(p => fs.existsSync(p));
-if (newPaths.length > 0) {
-  process.env.PATH = newPaths.join(';') + ';' + currentPath;
-  console.log('Added poppler paths to PATH:', newPaths);
-} else {
-  console.log('No poppler paths found. Available paths checked:', popplerPaths);
-}*/
-
-/*let PdfConverter;
-try {
-  PdfConverter = require('pdf-poppler').PdfConverter;
-  console.log('pdf-poppler module loaded successfully');
-} catch (e) {
-  console.log('pdf-poppler module not available:', e.message);
-  PdfConverter = null;
-}*/
-
-const { createClient } = require('@supabase/supabase-js');
-const fetch = require('node-fetch').default;
-
-const SUPABASE_URL = 'https://imszplqsfatobncgafhb.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'ISI_KEY_DISINI';
-const supabaseStorage = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const BUCKET_NAME = 'notiflex';
-
 // Utilitas: Ekstrak teks dari PDF (pdf-parse), fallback ke OCR jika kosong
 async function extractTextWithFallback(filePath, mimetype) {
   let text = '';
@@ -62,98 +26,10 @@ async function extractTextWithFallback(filePath, mimetype) {
       console.log('PDF parse error:', e.message);
       text = '';
     }
-    
-    // 2. Jika kosong/newline, fallback ke OCR (halaman 1)
-    /*if (!text || text.replace(/\n/g, '').length < 10) {
-      console.log('Text too short, attempting OCR fallback...');
-      
-      if (!PdfConverter) {
-        console.log('PdfConverter not available, trying direct pdftoppm...');
-        // Fallback: try direct pdftoppm command
-        try {
-          const outputDir = path.join(__dirname, '../uploads/tmp');
-          if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-          const outputImage = path.join(outputDir, 'page-1.png');
-          
-          // Use spawn to run pdftoppm directly
-          const pdftoppm = spawn('pdftoppm', [
-            '-png',
-            '-singlefile',
-            '-f', '1',
-            '-l', '1',
-            filePath,
-            path.join(outputDir, 'page-1')
-          ]);
-          
-          await new Promise((resolve, reject) => {
-            pdftoppm.on('close', (code) => {
-              if (code === 0) {
-                console.log('pdftoppm conversion successful');
-                resolve();
-              } else {
-                console.log('pdftoppm conversion failed with code:', code);
-                reject(new Error(`pdftoppm failed with code ${code}`));
-              }
-            });
-            
-            pdftoppm.on('error', (err) => {
-              console.log('pdftoppm spawn error:', err.message);
-              reject(err);
-            });
-          });
-          
-          // Check if the image was created
-          if (fs.existsSync(outputImage)) {
-            console.log('Image created successfully, running OCR...');
-            const ocrResult = await Tesseract.recognize(outputImage, 'ind');
-            text = ocrResult.data.text;
-            console.log('OCR result length:', text.length);
-          } else {
-            console.log('Image file not found after pdftoppm conversion');
-            throw new Error('Failed to create image from PDF');
-          }
-          
-          // Clean up
-          if (fs.existsSync(outputImage)) fs.unlinkSync(outputImage);
-          
-        } catch (directError) {
-          console.log('Direct pdftoppm failed:', directError.message);
-          throw new Error('pdf-poppler not installed and direct pdftoppm failed. Cannot OCR PDF.');
-        }
-      } else {
-        // Use pdf-poppler module
-        try {
-          const outputDir = path.join(__dirname, '../uploads/tmp');
-          if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-          const outputImage = path.join(outputDir, 'page-1.png');
-          
-          console.log('Using pdf-poppler module for conversion...');
-          await PdfConverter.convert(filePath, {
-            format: 'png',
-            out_dir: outputDir,
-            out_prefix: 'page',
-            page: 1
-          });
-          
-          if (fs.existsSync(outputImage)) {
-            console.log('Image created successfully, running OCR...');
-            const ocrResult = await Tesseract.recognize(outputImage, 'ind');
-            text = ocrResult.data.text;
-            console.log('OCR result length:', text.length);
-          } else {
-            console.log('Image file not found after pdf-poppler conversion');
-            throw new Error('Failed to create image from PDF');
-          }
-          
-          // Clean up
-          if (fs.existsSync(outputImage)) fs.unlinkSync(outputImage);
-          
-        } catch (popplerError) {
-          console.log('pdf-poppler conversion failed:', popplerError.message);
-          throw new Error('pdf-poppler conversion failed. Cannot OCR PDF.');
-        }
-      }
-    }*/
+    // 2. Jika kosong/newline, TIDAK ADA fallback ke OCR (poppler/pdftoppm dihapus)
+    if (!text || text.replace(/\n/g, '').length < 10) {
+      console.log('Text too short, skipping OCR fallback (poppler removed)...');
+    }
   } else if (mimetype.startsWith('image/')) {
     console.log('Processing image file with OCR...');
     const ocrResult = await Tesseract.recognize(filePath, 'ind');
