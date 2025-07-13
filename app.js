@@ -5,7 +5,18 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const pg = require('pg'); // PostgreSQL client
+const pgSession = require('connect-pg-simple')(session);
 const { supabase } = require('./supabaseClient');
+const pgConnection = process.env.DATABASE_URL;
+
+// Konfigurasi koneksi Pool PostgreSQL
+const pgPool = new pg.Pool({
+  connectionString: pgConnection,
+  // ssl: {
+  //     rejectUnauthorized: false // Hanya jika Anda menghadapi masalah SSL di lingkungan development/beberapa host
+  // }
+});
 
 // Membuat instance aplikasi Express.
 // 'app' adalah objek utama yang akan kita gunakan untuk mengkonfigurasi server.
@@ -17,11 +28,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Inisialisasi session store
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } // set true jika pakai https
+  store: new pgSession({
+      pool: pgPool,                // Konfigurasi pool PostgreSQL Anda
+      tableName: 'session',        // Nama tabel sesi yang Anda buat
+      // Insert optional options here (e.g. `createTableIfMissing` boolean to automatically create the session table)
+  }),
+  secret: process.env.SESSION_SECRET || 'your-very-secret-key', // HARUS DISET DENGAN NILAI UNIK DAN KUAT DI VERCEL
+  resave: false,               // Tidak menyimpan sesi kembali ke store jika tidak ada perubahan
+  saveUninitialized: false,    // Tidak menyimpan sesi yang baru tapi belum diinisialisasi (misal, tanpa login)
+  cookie: {
+      secure: process.env.NODE_ENV === 'production', // true di production (HTTPS), false di localhost (HTTP)
+      httpOnly: true, // Mencegah akses cookie dari JavaScript sisi klien
+      maxAge: 1000 * 60 * 60 * 24 // 1 hari
+  }
 }));
 
 // Routes
