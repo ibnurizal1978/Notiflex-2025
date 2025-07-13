@@ -27,6 +27,7 @@ app.use(session({
 // Routes
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
+const itemsRouter = require('./routes/items');
 
 // Konfigurasi halaman yang selalu bisa diakses (tanpa proteksi menu)
 const PUBLIC_PATHS = [
@@ -226,6 +227,7 @@ async function checkMenuAccess(req, res, next) {
 app.use('/', authRoutes);
 // Temporarily disable checkMenuAccess to fix redirect loop
 app.use('/dashboard', requireAuth, attachMenus, attachMessages, dashboardRoutes);
+app.use('/dashboard/items', itemsRouter);
 // app.use('/dashboard', requireAuth, attachMenus, attachMessages, checkMenuAccess, dashboardRoutes);
 
 // Menentukan port di mana server akan berjalan.

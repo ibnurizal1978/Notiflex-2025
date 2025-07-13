@@ -24,14 +24,6 @@
                 <label>Upload File (PDF/JPG/PNG)</label>
                 <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
               </div>
-              <div class="form-group">
-                <label>Title (AI generated, can edit)</label>
-                <input type="text" name="title" id="titleField" class="form-control" required>
-              </div>
-              <div class="form-group">
-                <label>End Date (AI generated, can edit)</label>
-                <input type="date" name="end_date" id="endDateField" class="form-control" required>
-              </div>
               <button type="submit" class="btn btn-primary">Save</button>
               <div id="itemMsg" class="mt-2"></div>
             </form>
@@ -43,40 +35,6 @@
 </main>
 <%- include('layouts/footer') %>
 <script>
-async function getAIInfoFromFile(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  document.getElementById('titleField').value = '';
-  document.getElementById('endDateField').value = '';
-  document.getElementById('itemMsg').innerHTML = '<div class="alert alert-info">Analyzing file with AI...</div>';
-  try {
-    const res = await fetch('/dashboard/items/ai-extract', {
-      method: 'POST',
-      body: formData
-    });
-    const result = await res.json();
-    if (result.success) {
-      document.getElementById('titleField').value = result.title || '';
-      document.getElementById('endDateField').value = result.end_date || '';
-      if (!result.title && !result.end_date) {
-        document.getElementById('itemMsg').innerHTML = '<div class="alert alert-warning">AI tidak menemukan judul atau tanggal berakhir pada dokumen.</div>';
-      } else {
-        document.getElementById('itemMsg').innerHTML = '';
-      }
-    } else {
-      document.getElementById('itemMsg').innerHTML = '<div class="alert alert-warning">AI failed: ' + (result.error || 'Unknown error') + '</div>';
-    }
-  } catch (err) {
-    document.getElementById('itemMsg').innerHTML = '<div class="alert alert-warning">AI failed: ' + err.message + '</div>';
-  }
-}
-
-document.querySelector('input[name="file"]').addEventListener('change', function(e) {
-  if (this.files && this.files[0]) {
-    getAIInfoFromFile(this.files[0]);
-  }
-});
-
 document.getElementById('addItemForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const form = this;
