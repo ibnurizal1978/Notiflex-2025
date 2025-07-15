@@ -1,4 +1,4 @@
-<%- include('layouts/header') %>
+%21<%- include('layouts/header') %>
 <main role="main" class="main-content">
   <div class="container-fluid">
     <div class="row justify-content-center">
@@ -21,6 +21,14 @@
                 <input type="text" name="notes" class="form-control">
               </div>
               <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" id="titleField" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="end_date" id="endDateField" class="form-control" required>
+              </div>
+              <div class="form-group">
                 <label>Upload File (PDF/JPG/PNG)</label>
                 <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
               </div>
@@ -35,6 +43,35 @@
 </main>
 <%- include('layouts/footer') %>
 <script>
+document.querySelector('input[name="file"]').addEventListener('change', async function(e) {
+  const fileInput = this;
+  const file = fileInput.files[0];
+  document.getElementById('titleField').value = '';
+  document.getElementById('endDateField').value = '';
+  document.getElementById('itemMsg').innerHTML = '';
+  if (!file) return;
+  const formData = new FormData();
+  formData.append('file', file);
+  try {
+    const res = await fetch('/dashboard/items/extract-info', {
+      method: 'POST',
+      body: formData
+    });
+    const result = await res.json();
+    if (result.success) {
+      document.getElementById('titleField').value = result.title || '';
+      document.getElementById('endDateField').value = result.end_date || '';
+      if (!result.title && !result.end_date) {
+        document.getElementById('itemMsg').innerHTML = '<div class="alert alert-warning">Tidak dapat mengekstrak judul atau tanggal dari file.</div>';
+      }
+    } else {
+      document.getElementById('itemMsg').innerHTML = '<div class="alert alert-warning">Ekstraksi gagal: ' + (result.error || 'Unknown error') + '</div>';
+    }
+  } catch (err) {
+    document.getElementById('itemMsg').innerHTML = '<div class="alert alert-warning">Ekstraksi gagal: ' + err.message + '</div>';
+  }
+});
+
 document.getElementById('addItemForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const form = this;

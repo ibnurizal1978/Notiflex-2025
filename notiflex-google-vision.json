@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "notiflex-462910",
+  "private_key_id": "a5e02293cc8f650a4c5d227a4ffc728b9ec19691",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC0q3vXEq6vPjPS\nfIUWnVLd2zzGghz/R+dys2JMAXZ/l1Q2SNK4Q/nL4nIcU10nbQTBnrGJ5/sYvopc\nc3iQgbHzM10xAPmfAA/cvEM9C6CZctodo8WuO4wjETDOHZticm5NZcsVIpAmIsDP\nbohBFwb82M49rU3dY9Ff/3a/aaD+Wx1UKcGDZsjZA/NVvOi//kAv1Wxn8VX7Kp+n\n+mIv8GkE/4wLsncFhekYt3RSge4hcZCehncveMiVQKvyX8yVN+/UC2oiJWsW1Pov\nwtS3ABrXdVAaw8V5okn5HXAjoXaAHEaEFoCw6wWg5xuEU6X0as+t+3BHGBIME9rP\nJRbNVVRtAgMBAAECggEACFjG0SYiD2MQilgp3uRYTHshOOuQcuPLx9MNRsUniBgB\n8jsVjyFG1FpLGs9oJZbmChruiVhAE8HTyxcjmgt/4OQ92TJ6FdQvJ2vEMHkNy6EQ\nfh+Pla/XFtSnvFIGWHtAaM973SdaYQSogzzQSy+I6VwL1TIhP4npxaVcA1ZaM34G\nlzJLcPyce2t70aTqDciJ1t76BQnBeRDPt9GaaXgpNqYbu25fr4Ng1RvOoM/G6QRz\nAirOTOCrzkw54kJivIamRoZkEmpau22gSrkt+DnstC6V2FhwSaGpnRyPhtjxWM2S\n8027nIbff1m0MjmFnRaRLG9DvzikxJmXFe3Yo6MGEQKBgQD1L3aNPwtIpDE2k8PA\nMlrKQIy/yZulvbG/1FuEG+D/xEozVKaAxeyR1Lr9I5N7y2Sgr/1lkH/oVMWCV6Ul\nt9fPJShXXx329s437TcDKaLZ+rbgkr/1+6QMdyNiKPKBvbogwk9jUPH+S5xKxFtF\nXqhlt0Gi4umLOjmaSsvwXlRFHQKBgQC8o4lcXN9yFWpRSENgrbfI7ezsn15KZGJL\n2dmnQwsazigSTTjOdJtyUrUa/cXdSiltxsUPiLIBrGMM0OHtHPe5QyIuvle+YSSQ\nz2kzHHR9Xu2nvhqLJc92c3C7USkokYT7eHTVGpmMD0m2WtQY6yQR0afBo9DYQ6Y8\nwLk8oTa7kQKBgByfrORyfru9R22KtKikeEryXDwrqjsgOTce8IwswQi6/rqdYE7a\nTHL99dKFq7shFJ9ZzGhmBTi3ZNOBresIWm55dQs2NIZXa93FmM2Kt9Ng3Ka9GyH5\nfb5izkOwahdRcgBPDvuWQJoic52a7NjdYyV0znnYqdEyO/VSVBq8uHPVAoGBALml\n8J93v2hVbybDiZvyG3ehwJQ3W+K23I5tvekA8ELXNVSdrxRwajOe9iG0MzDPteoV\nvwbErvs6ntiUEmT7J0mqqk96gHwaupPRrGTi0jo4XIfDbfgXpA+dGQsgmvMUE94w\n9DpuTUMsII1Y4ngLopnuzbyi7fyIx2fu+96Rgn4hAoGACSHbhVB0kZAvLgLAttlK\nX445PpmlAPTJOjm+q4HXEInYD5gMioAnVNqtV9FGL+OHHROVE9LfY6u0kBS+TvoK\ngI/ZuTMDxaDQMW8bGLX+M7SXQMhPbpUA4VaLuiJezF1Tz4XL9KH+2wUiwqZzp5PC\nyCHJkqG5tdN8REhgvAg3BSA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "notiflex-vision-api@notiflex-462910.iam.gserviceaccount.com",
+  "client_id": "100446324349543857833",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/notiflex-vision-api%40notiflex-462910.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
