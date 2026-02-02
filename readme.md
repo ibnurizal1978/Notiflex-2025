@@ -1,5 +1,7 @@
 Notiflex: An Expiration Reminder Software
-Notiflex adalah aplikasi cerdas yang dirancang untuk memantau masa berlaku (expiration date) aset, dokumen, atau lisensi Anda. Jangan biarkan tenggat waktu terlewat lagi—dapatkan notifikasi tepat waktu sebelum semuanya terlambat.
+
+Notiflex adalah aplikasi cerdas yang dirancang untuk memantau masa berlaku (expiration date) aset, dokumen, atau lisensi Anda.
+
 
 
 **Fitur Utama**
