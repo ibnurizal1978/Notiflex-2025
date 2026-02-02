@@ -1,17 +1,17 @@
 Notiflex: An Expiration Reminder Software
 
-Notiflex adalah aplikasi cerdas yang dirancang untuk memantau masa berlaku (expiration date) aset, dokumen, atau lisensi Anda.
+Notiflex is an intelligent application designed to monitor the expiration dates of your assets, documents, and licenses.
 
 
 
-**Fitur Utama**
-- Real-time Monitoring: Pantau semua tanggal expire dalam satu dashboard.
-- Automated Notifications: Bisa set mau berapa hari sebelum expired, reminder otomatis melalui email.
-- Category Management: Kelompokkan pengingat berdasarkan lisensi software, dokumen, dan item lainnya.
-- Status Tracking (Berakhir tahun ini, Berakhir bulan ini, Sudah berakhir).
+**Key Features**
+- Real-time Monitoring: Monitor all expiration dates seamlessly from a single, centralized dashboard.
+- Automated Notifications: Set custom lead times (e.g., 30 days before expiry) to receive automated reminders directly via email.
+- Category Management: Organize your reminders into logical groups such as software licenses, legal documents, and other custom items.
+- Assign to Other: You can assign people in your organization who are responsible for managing the expiration process.
+- Document Management: You can upload relevant document regarding to expiration process.
 
-
-**Teknologi yang Digunakan**
+**Stack**
 
 - Backend: Node.js
 - Frontend: Express
